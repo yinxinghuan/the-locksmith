@@ -1,0 +1,57 @@
+.bd-choices {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 16px max(env(safe-area-inset-bottom), 14vh) 16px;
+  gap: 14px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 35%, rgba(0, 0, 0, 0.72) 100%);
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  &.is-armed {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.bd-choice {
+  appearance: none;
+  border: 1px solid rgba(245, 220, 180, 0.55);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px) saturate(0.85);
+  -webkit-backdrop-filter: blur(8px) saturate(0.85);
+  color: rgba(248, 234, 210, 0.97);
+  font-family: 'Cormorant Garamond', 'Source Han Serif SC', 'Songti SC', serif;
+  font-style: italic;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  padding: 13px 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 250px;
+  max-width: 84vw;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: bd-choice-up 0.55s ease-out forwards;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:hover, &:focus-visible {
+    background: rgba(72, 22, 22, 0.7);
+    border-color: rgba(255, 240, 220, 0.85);
+  }
+  &:active {
+    background: rgba(120, 38, 38, 0.78);
+    transform: translateY(0) scale(0.985);
+  }
+}
+
+@keyframes bd-choice-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
