@@ -35,8 +35,8 @@ const STRINGS: Record<Locale, Record<string, string>> = {
     'choice.photograph_it':  'photograph it',
 
     // ── Endings ────────────────────────────────────────────────────────────
-    'ending.AAA.title':   'develop a roll',
-    'ending.AAA.tagline': 'The shoot becomes the night.',
+    'ending.AAA.title':   'the third hand',
+    'ending.AAA.tagline': 'The slip fell. Three hands moved to catch it. She has two. Yours are not in the room.',
     'ending.AAB.title':   'where you never touched her',
     'ending.AAB.tagline': "A handprint, where your hand wasn't.",
     'ending.ABA.title':   'closer',
@@ -81,8 +81,8 @@ const STRINGS: Record<Locale, Record<string, string>> = {
     'choice.ask_mark':       '这是谁留下的',
     'choice.photograph_it':  '把它拍下来',
 
-    'ending.AAA.title':   '冲一卷',
-    'ending.AAA.tagline': '拍摄成了这一夜。',
+    'ending.AAA.title':   '第三只手',
+    'ending.AAA.tagline': '她让它滑下。三只手伸过来接住了它。她有两只。你的手不在这间屋里。',
     'ending.AAB.title':   '你没碰过的地方',
     'ending.AAB.tagline': '一只手印, 你的手没去过。',
     'ending.ABA.title':   '更近一些',

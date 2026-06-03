@@ -113,7 +113,10 @@ export const NODES: Record<string, NodeDef> = {
   ),
 
   // Layer 3 — endings (8)
-  AAA: ending('AAA', 'sensual'),
+  // AAA was originally a sensual ending (slip falls, intimate). The
+  // generated video accidentally rendered a third hand catching the slip
+  // — perfect material to flip into horror. Tagline reframes the moment.
+  AAA: ending('AAA', 'horror'),
   AAB: ending('AAB', 'horror'),
   ABA: ending('ABA', 'sensual'),
   ABB: ending('ABB', 'horror'),
