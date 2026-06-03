@@ -5,6 +5,10 @@ export type EndingType = 'sensual' | 'horror';
 export interface ChoiceDef {
   labelKey: string;      // i18n key for the choice button text
   nextId: string;        // node id to navigate to
+  // Hotspot pin position on the freeze image (image-percent 0-100). Engine
+  // maps to viewport-percent via `-13 + p × 1.26` (see [[platform-safe-area-13pct]]).
+  pinX: number;
+  pinY: number;
 }
 
 export interface NodeDef {
@@ -19,4 +23,4 @@ export interface NodeDef {
   endingTaglineKey?: string;
 }
 
-export type Phase = 'playing' | 'choosing' | 'ending-card';
+export type Phase = 'intro' | 'playing' | 'choosing' | 'ending-card';

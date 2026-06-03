@@ -58,6 +58,11 @@ const STRINGS: Record<Locale, Record<string, string>> = {
     'ui.sensual_label':  'sensual',
     'ui.horror_label':   'wrong',
     'ui.brand_sig':      'alteru · after dark',
+
+    // ── Intro ──────────────────────────────────────────────────────────────
+    'intro.title':   'the photographer',
+    'intro.hint':    'A studio session in five minutes. Direct her. Tap the lights — or pick a phrase. Some choices end soft. Some end wrong.',
+    'intro.cta':     'tap to begin',
   },
 
   zh: {
@@ -98,6 +103,11 @@ const STRINGS: Record<Locale, Record<string, string>> = {
     'ui.sensual_label':  '感官',
     'ui.horror_label':   '不对劲',
     'ui.brand_sig':      'alteru · after dark',
+
+    // ── Intro ──────────────────────────────────────────────────────────────
+    'intro.title':   '摄影师',
+    'intro.hint':    '一场五分钟的私拍。你指导她。点亮灯 — 或选一句话。有的走向温柔, 有的走向不对劲。',
+    'intro.cta':     '点屏幕开始',
   },
 };
 

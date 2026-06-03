@@ -15,8 +15,11 @@
 //       └── BB "step closer to mark"
 //           ├── BBA "ask about it"       → 👹 horror
 //           └── BBB "photograph it"      → 👹 horror
+//
+// Pin coords are in IMAGE-percent (0-100) relative to the freeze frame.
+// Engine maps to viewport via `-13 + p × 1.26` for 3:4 hero on 9:19+ phone.
 
-import type { EndingType, NodeDef } from './types';
+import type { EndingType, NodeDef, ChoiceDef } from './types';
 
 export const ROOT_ID = 'root';
 
@@ -35,16 +38,13 @@ function posterFor(id: string): string {
   return p ? `${p}_end.png` : 'root_start.png';
 }
 
-function branch(id: string, aKey: string, aNext: string, bKey: string, bNext: string): NodeDef {
+function branch(id: string, a: ChoiceDef, b: ChoiceDef): NodeDef {
   return {
     id,
     video: `${id}.mp4`,
     posterFrame: posterFor(id),
     endFrame: `${id}_end.png`,
-    choices: [
-      { labelKey: aKey, nextId: aNext },
-      { labelKey: bKey, nextId: bNext },
-    ],
+    choices: [a, b],
   };
 }
 
@@ -61,18 +61,56 @@ function ending(id: string, type: EndingType): NodeDef {
   };
 }
 
+// Helper: ChoiceDef factory with pin coords (image-percent).
+const ch = (labelKey: string, nextId: string, pinX: number, pinY: number): ChoiceDef =>
+  ({ labelKey, nextId, pinX, pinY });
+
 export const NODES: Record<string, NodeDef> = {
-  root: branch('root', 'choice.lower_strap', 'A', 'choice.turn_to_light', 'B'),
+  // root: Lin Wei standing on cyclorama, POV camera in foreground.
+  // A pin = her left strap (her right from camera view, image-left).
+  // B pin = the rim light source / her right shoulder lit area.
+  root: branch('root',
+    ch('choice.lower_strap',   'A', 36, 36),
+    ch('choice.turn_to_light', 'B', 64, 38),
+  ),
 
-  // Layer 1
-  A: branch('A', 'choice.and_the_other', 'AA', 'choice.step_closer', 'AB'),
-  B: branch('B', 'choice.lie_down',      'BA', 'choice.see_mark',     'BB'),
+  // A: Looking back, one strap down. AA = the other strap (other shoulder).
+  // AB = move camera closer to her face.
+  A: branch('A',
+    ch('choice.and_the_other', 'AA', 58, 36),
+    ch('choice.step_closer',   'AB', 42, 30),
+  ),
 
-  // Layer 2
-  AA: branch('AA', 'choice.let_it_fall',    'AAA', 'choice.changed_mind', 'AAB'),
-  AB: branch('AB', 'choice.touch_shoulder', 'ABA', 'choice.ask_leave',    'ABB'),
-  BA: branch('BA', 'choice.turn_face',      'BAA', 'choice.lower_camera', 'BAB'),
-  BB: branch('BB', 'choice.ask_mark',       'BBA', 'choice.photograph_it','BBB'),
+  // B: Profile with bruise visible. BA = lie down (bottom of frame).
+  // BB = closer to mark on shoulder.
+  B: branch('B',
+    ch('choice.lie_down',      'BA', 50, 70),
+    ch('choice.see_mark',      'BB', 58, 42),
+  ),
+
+  // AA: Both straps down. AAA = let it fall (down, on slip). AAB = changed mind (camera/away).
+  AA: branch('AA',
+    ch('choice.let_it_fall',   'AAA', 50, 60),
+    ch('choice.changed_mind',  'AAB', 22, 40),
+  ),
+
+  // AB: Close-up of her face. ABA = touch shoulder. ABB = ask leave (away gesture).
+  AB: branch('AB',
+    ch('choice.touch_shoulder','ABA', 40, 50),
+    ch('choice.ask_leave',     'ABB', 22, 40),
+  ),
+
+  // BA: She's lying down. BAA = ask her to turn face. BAB = put camera down (low POV).
+  BA: branch('BA',
+    ch('choice.turn_face',     'BAA', 50, 55),
+    ch('choice.lower_camera',  'BAB', 22, 80),
+  ),
+
+  // BB: Close-up of shoulder with mark. BBA = ask "who put that there". BBB = photograph it.
+  BB: branch('BB',
+    ch('choice.ask_mark',      'BBA', 38, 30),
+    ch('choice.photograph_it', 'BBB', 65, 55),
+  ),
 
   // Layer 3 — endings (8)
   AAA: ending('AAA', 'sensual'),

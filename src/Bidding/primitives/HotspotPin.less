@@ -1,0 +1,52 @@
+.bd-pin {
+  appearance: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: 0;
+  padding: 22px;
+  cursor: pointer;
+  z-index: 4;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: bd-pin-in 0.7s ease-out backwards;
+}
+
+.bd-pin__dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 232, 210, 0.96);
+  box-shadow: 0 0 8px rgba(255, 200, 170, 0.7),
+              0 0 22px rgba(255, 180, 150, 0.45);
+  position: relative;
+  z-index: 2;
+}
+
+.bd-pin__ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 232, 210, 0.7);
+  animation: bd-pin-pulse 1.8s ease-out infinite;
+  z-index: 1;
+}
+
+.bd-pin__label {
+  display: none;  // labels live in the bottom ChoiceOverlay; pin is just the tap target
+}
+
+@keyframes bd-pin-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes bd-pin-pulse {
+  0%   { width: 12px; height: 12px; opacity: 0.9; border-color: rgba(255, 232, 210, 0.85); }
+  100% { width: 56px; height: 56px; opacity: 0;   border-color: rgba(255, 232, 210, 0); }
+}
