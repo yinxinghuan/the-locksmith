@@ -1,4 +1,4 @@
-// The Photographer — v3 decision-tree FMV types.
+// The Locksmith — v3 decision-tree FMV types.
 
 export type EndingType = 'sensual' | 'horror';
 
@@ -14,7 +14,10 @@ export interface ChoiceDef {
 export interface NodeDef {
   id: string;
   video: string;         // filename in /public/videos/
-  posterFrame?: string;  // filename in /public/stills/ — shown before video loads
+  posterFrame?: string;  // parent's endFrame — shown while video element loads
+  // When set: engine HARD-CUTS stableSrc to this on choice pick, breaking the
+  // chain. Use for cross-space beats where 5s morph would invent rooms.
+  startFrame?: string;
   endFrame: string;      // filename in /public/stills/ — the freeze frame after video
   choices?: ChoiceDef[]; // omitted on endings
   isEnding?: boolean;

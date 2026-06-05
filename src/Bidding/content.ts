@@ -1,20 +1,20 @@
-// The Photographer — node tree (15 nodes, 8 endings).
+// The Locksmith — node tree (15 nodes, 8 endings).
 //
-//   root
-//   ├── A "lower the strap"        ← intimate route
-//   │   ├── AA "and the other"
-//   │   │   ├── AAA "let it fall"        → 💖 sensual
-//   │   │   └── AAB "I changed my mind"  → 👹 horror
-//   │   └── AB "step closer"
-//   │       ├── ABA "touch her shoulder" → 💖 sensual
-//   │       └── ABB "ask her to leave"   → 👹 horror
-//   └── B "turn to the light"      ← technical route
-//       ├── BA "lie down"
-//       │   ├── BAA "turn her face"      → 👹 horror
-//       │   └── BAB "lower the camera"   → 💖 sensual
-//       └── BB "step closer to mark"
-//           ├── BBA "ask about it"       → 👹 horror
-//           └── BBB "photograph it"      → 👹 horror
+//   root  (Beat 0: corridor, her half-open doorway)
+//   ├── T  trust (Layer 1: she relaxes)
+//   │   ├── TE enter
+//   │   │   ├── TEP push    → 💖 sensual  (wine on the sofa)
+//   │   │   └── TEQ pull    → 💖 sensual  (coffee at foyer)
+//   │   └── TR refuse
+//   │       ├── TRP push    → 💖 sensual  (walking her down barefoot)
+//   │       └── TRQ pull    → 👹 horror   (man's laugh from her doorway)
+//   └── S  suspect (Layer 1: she tightens)
+//       ├── SE enter
+//       │   ├── SEP push    → 👹 horror   (man in her bed)
+//       │   └── SEQ pull    → 👹 horror   (her on phone — "he's leaving")
+//       └── SR refuse
+//           ├── SRP push    → 👹 horror   (rolled rug with bare foot)
+//           └── SRQ pull    → 💖 sensual  reversal (she grabs your wrist crying)
 //
 // Pin coords are in IMAGE-percent (0-100) relative to the freeze frame.
 // Engine maps to viewport via `-13 + p × 1.26` for 3:4 hero on 9:19+ phone.
@@ -23,14 +23,10 @@ import type { EndingType, NodeDef, ChoiceDef } from './types';
 
 export const ROOT_ID = 'root';
 
-// Each video's first frame visually equals its parent's last frame (chain
-// continuity), so we use the parent's end-frame as the <video poster=...> for
-// each non-root node. This prevents the brief "wrong frame" flash before the
-// video starts loading.
 function parentOf(id: string): string | null {
   if (id === 'root') return null;
-  if (id.length === 1) return 'root';   // A, B → root
-  return id.slice(0, -1);                // AA → A, AAA → AA, etc.
+  if (id.length === 1) return 'root';   // T, S → root
+  return id.slice(0, -1);                // TE → T, TEP → TE
 }
 
 function posterFor(id: string): string {
@@ -48,11 +44,12 @@ function branch(id: string, a: ChoiceDef, b: ChoiceDef): NodeDef {
   };
 }
 
-function ending(id: string, type: EndingType): NodeDef {
+function ending(id: string, type: EndingType, startFrame?: string): NodeDef {
   return {
     id,
     video: `${id}.mp4`,
     posterFrame: posterFor(id),
+    startFrame,
     endFrame: `${id}_end.png`,
     isEnding: true,
     endingType: type,
@@ -61,67 +58,65 @@ function ending(id: string, type: EndingType): NodeDef {
   };
 }
 
-// Helper: ChoiceDef factory with pin coords (image-percent).
 const ch = (labelKey: string, nextId: string, pinX: number, pinY: number): ChoiceDef =>
   ({ labelKey, nextId, pinX, pinY });
 
 export const NODES: Record<string, NodeDef> = {
-  // root: Lin Wei standing on cyclorama, POV camera in foreground.
-  // A pin = her left strap (her right from camera view, image-left).
-  // B pin = the rim light source / her right shoulder lit area.
+  // root: She stands half-open in the doorway, arms crossed, looking at you.
+  //   T pin = her eyes/face (read her as trustworthy)
+  //   S pin = the dark gap of door behind her (suspicious of what's inside)
   root: branch('root',
-    ch('choice.lower_strap',   'A', 36, 36),
-    ch('choice.turn_to_light', 'B', 64, 38),
+    ch('choice.trust_her',    'T', 50, 32),
+    ch('choice.suspect_her',  'S', 56, 55),
   ),
 
-  // A: Looking back, one strap down. AA = the other strap (other shoulder).
-  // AB = move camera closer to her face.
-  A: branch('A',
-    ch('choice.and_the_other', 'AA', 58, 36),
-    ch('choice.step_closer',   'AB', 42, 30),
+  // T: She has dropped her arms, body softer. Choose: enter or work from threshold.
+  T: branch('T',
+    ch('choice.enter_trust',  'TE', 46, 50),
+    ch('choice.refuse_trust', 'TR', 50, 80),
   ),
 
-  // B: Profile with bruise visible. BA = lie down (bottom of frame).
-  // BB = closer to mark on shoulder.
-  B: branch('B',
-    ch('choice.lie_down',      'BA', 50, 70),
-    ch('choice.see_mark',      'BB', 58, 42),
+  // S: She has tightened arms, eyes flicked back. Choose: push in anyway or back off.
+  S: branch('S',
+    ch('choice.enter_suspect',  'SE', 50, 50),
+    ch('choice.refuse_suspect', 'SR', 28, 70),
   ),
 
-  // AA: Both straps down. AAA = let it fall (down, on slip). AAB = changed mind (camera/away).
-  AA: branch('AA',
-    ch('choice.let_it_fall',   'AAA', 50, 60),
-    ch('choice.changed_mind',  'AAB', 22, 40),
+  // TE: Inside foyer, glimpse of living room. Choose: stay or finish & leave.
+  TE: branch('TE',
+    ch('choice.stay_inside',  'TEP', 65, 65),
+    ch('choice.leave_polite', 'TEQ', 30, 50),
   ),
 
-  // AB: Close-up of her face. ABA = touch shoulder. ABB = ask leave (away gesture).
-  AB: branch('AB',
-    ch('choice.touch_shoulder','ABA', 40, 50),
-    ch('choice.ask_leave',     'ABB', 22, 40),
+  // TR: You crouching at threshold, she on threshold with water. Push or pull.
+  TR: branch('TR',
+    ch('choice.walk_her_down', 'TRP', 50, 60),
+    ch('choice.goodnight',     'TRQ', 28, 50),
   ),
 
-  // BA: She's lying down. BAA = ask her to turn face. BAB = put camera down (low POV).
-  BA: branch('BA',
-    ch('choice.turn_face',     'BAA', 50, 55),
-    ch('choice.lower_camera',  'BAB', 22, 80),
+  // SE: Inside foyer, she crowding you, rolled rug in living room. Push or out.
+  SE: branch('SE',
+    ch('choice.ask_about_door', 'SEP', 60, 50),
+    ch('choice.wrong_job_out',  'SEQ', 28, 65),
   ),
 
-  // BB: Close-up of shoulder with mark. BBA = ask "who put that there". BBB = photograph it.
-  BB: branch('BB',
-    ch('choice.ask_mark',      'BBA', 38, 30),
-    ch('choice.photograph_it', 'BBB', 65, 55),
+  // SR: You half-stepped back, men's shoe in foyer behind her. Push or done.
+  SR: branch('SR',
+    ch('choice.wait_downstairs', 'SRP', 32, 70),
+    ch('choice.done_here',       'SRQ', 28, 50),
   ),
 
-  // Layer 3 — endings (8)
-  // AAA was originally a sensual ending (slip falls, intimate). The
-  // generated video accidentally rendered a third hand catching the slip
-  // — perfect material to flip into horror. Tagline reframes the moment.
-  AAA: ending('AAA', 'horror'),
-  AAB: ending('AAB', 'horror'),
-  ABA: ending('ABA', 'sensual'),
-  ABB: ending('ABB', 'horror'),
-  BAA: ending('BAA', 'horror'),
-  BAB: ending('BAB', 'sensual'),
-  BBA: ending('BBA', 'horror'),
-  BBB: ending('BBB', 'horror'),
+  // Layer 3 — 8 endings.
+  // Six of them cross spaces (foyer→bedroom, doorway→stairwell, etc). For
+  // those, give the video a pre-beat startFrame so the engine hard-cuts to a
+  // frame near the beat opening instead of asking the model to interpolate
+  // across rooms in 5s. See feedback_fmv_5s_one_beat — 三同一近 rule.
+  TEP: ending('TEP', 'sensual', 'TEP_start.png'),
+  TEQ: ending('TEQ', 'sensual'),
+  TRP: ending('TRP', 'sensual', 'TRP_start.png'),
+  TRQ: ending('TRQ', 'horror',  'TRQ_start.png'),
+  SEP: ending('SEP', 'horror',  'SEP_start.png'),
+  SEQ: ending('SEQ', 'horror',  'SEQ_start.png'),
+  SRP: ending('SRP', 'horror',  'SRP_start.png'),
+  SRQ: ending('SRQ', 'sensual'),
 };

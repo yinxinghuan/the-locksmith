@@ -19,5 +19,6 @@ npm-debug.log*
 # generation artifacts (kept locally for re-runs; not for repo)
 _frames/
 _videos/
+scripts/
 candidates/
 *.candidates/

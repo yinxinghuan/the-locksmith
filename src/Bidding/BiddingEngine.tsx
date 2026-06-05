@@ -35,8 +35,8 @@ export default function BiddingEngine() {
 
   const node = NODES[nodeId];
 
-  // Preload next-layer end-frames + posters while the current video plays —
-  // so the freeze handoff has no black flash.
+  // Preload next-layer end-frames + posters + start-frames while the current
+  // video plays — so the freeze handoff has no black flash.
   useEffect(() => {
     if (!node?.choices) return;
     node.choices.forEach((c) => {
@@ -45,6 +45,9 @@ export default function BiddingEngine() {
       const img = new Image(); img.src = stillUrl(n.endFrame);
       if (n.posterFrame) {
         const p = new Image(); p.src = stillUrl(n.posterFrame);
+      }
+      if (n.startFrame) {
+        const s = new Image(); s.src = stillUrl(n.startFrame);
       }
     });
   }, [nodeId, node]);
@@ -59,8 +62,14 @@ export default function BiddingEngine() {
   }, [node]);
 
   const onPick = useCallback((nextId: string) => {
-    // DO NOT touch stableSrc — keep showing the current freeze frame, which
-    // also equals the new video's first frame (chain continuity).
+    const next = NODES[nextId];
+    // Cross-space beats break chain continuity on purpose: hard-cut stableSrc
+    // to the child's startFrame so the video begins from a frame near the
+    // beat opening (Romanian-New-Wave cut). For chained nodes, leave
+    // stableSrc alone — parent's endFrame == child's first frame.
+    if (next?.startFrame) {
+      setStableSrc(stillUrl(next.startFrame));
+    }
     setPhase('playing');
     setNodeId(nextId);
   }, []);
@@ -102,7 +111,11 @@ export default function BiddingEngine() {
           <VideoStage
             key={`v-${node.id}`}
             videoSrc={videoUrl(node.video)}
-            posterSrc={node.posterFrame ? stillUrl(node.posterFrame) : stillUrl(node.endFrame)}
+            posterSrc={
+              node.startFrame ? stillUrl(node.startFrame)
+              : node.posterFrame ? stillUrl(node.posterFrame)
+              : stillUrl(node.endFrame)
+            }
             fallbackImg={stillUrl(node.endFrame)}
             onEnded={onVideoEnded}
             holdMs={250}
